@@ -13,6 +13,9 @@ HOST = requests.get('https://www.meethue.com/api/nupnp').json()[0]['internalipad
 USERNAME = os.environ['USERNAME']
 API_URL = 'http://{}/api/{}'.format(HOST, USERNAME)
 
+LAT='37N'
+LONG='122W'
+
 LR_LIGHT_IDS = ['1', '2', '3']
 EMMA_LIGHT_IDS = ['4', '5', '6']
 LIGHT_IDS = LR_LIGHT_IDS + EMMA_LIGHT_IDS
@@ -165,6 +168,38 @@ def create_lr_switch_rule(group_id, button_id, scene_id):
 def create_emma_switch_rule(group_id, button_id, scene_id):
     return create_switch_rule(name='Emma B{}'.format(button_id), sensor_id=EMMA_SWITCH_ID, button_id=button_id, group_id=group_id, scene_id=scene_id)
 
+def configure_daylight_sensor(lat, long, sunriseoffset=0, sunsetoffset=0):
+    resource_json = {
+        'lat': lat,
+        'long': long,
+        'sunriseoffset': sunriseoffset,
+        'sunsetoffset': sunsetoffset
+    }
+    return request(requests.put, '/sensors/1/config', resource_json)
+
+def create_daylight_rule(name, group_id, scene_id, transition=4, daylight=True):
+    json = {
+        'name': name,
+        'conditions': [
+            {
+                "address": "/sensors/1/state/daylight",
+                "operator": "eq",
+                "value": str(daylight).lower()
+            }
+        ],
+        'actions': [
+            {
+                'address': '/groups/{}/action'.format(group_id),
+                'method': 'PUT',
+                'body': {
+                    'scene': scene_id,
+                    'transitiontime': transition
+                }
+            }
+        ]
+    }
+    return create_or_update('rules', json)
+
 def main():
     lr_group_id = create_group('Living Room', LR_LIGHT_IDS)
     emma_group_id = create_group('Emma', EMMA_LIGHT_IDS)
@@ -183,6 +218,9 @@ def main():
     create_emma_switch_rule(emma_group_id, 2, 'off')
     create_emma_switch_rule(emma_group_id, 3, 'dimred')
     create_emma_switch_rule(emma_group_id, 4, 'colorloop')
+
+    configure_daylight_sensor(LAT, LONG)
+    create_daylight_rule('Emma Morning', emma_group_id, 'white', transition=(10 * 60 * 60))
 
 if __name__ == '__main__':
     main()
