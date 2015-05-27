@@ -43,8 +43,7 @@ SCENE_JSONS = [{
     'lights': {
         light_id: {
             'on': True,
-            'bri': 100,
-            'sat': 0
+            'bri': 100
         }
         for light_id in LIGHT_IDS
     }
