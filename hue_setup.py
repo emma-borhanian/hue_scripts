@@ -105,7 +105,7 @@ def create_or_update(resource_type, resource_json):
 
     if resource_id is None:
         response = request(requests.post, '/{}'.format(resource_type), resource_json)
-        resource_id = response.resource_json()[0]['success']['id']
+        resource_id = response.json()[0]['success']['id']
         if '/' in resource_id:
             _, _, resource_id = resource_id.rpartition('/')
         return resource_id
