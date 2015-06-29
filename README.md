@@ -1,3 +1,7 @@
+# Setup
+
+* `pip install -r requirements.txt`
+
 # Personal setup for hue lights in apartment
 
 Also my first real attempt at writing python.
