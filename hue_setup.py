@@ -42,6 +42,17 @@ SCENE_JSONS = [{
         for light_id in LIGHT_IDS
     }
 }, {
+    'name': 'white1hour',
+    'transitiontime': 10 * 60 * 60, # given in multiples of .1 seconds
+    'lights': {
+        light_id: {
+            'on': True,
+            'bri': 255,
+            'sat': 0
+        }
+        for light_id in LIGHT_IDS
+    }
+}, {
     'name': 'dim',
     'lights': {
         light_id: {
@@ -177,7 +188,7 @@ def configure_daylight_sensor(lat, long, sunriseoffset=0, sunsetoffset=0):
     }
     return request(requests.put, '/sensors/1/config', resource_json)
 
-def create_daylight_rule(name, group_id, scene_id, transition=4, daylight=True):
+def create_daylight_rule(name, group_id, scene_id, daylight=True):
     json = {
         'name': name,
         'conditions': [
@@ -192,8 +203,7 @@ def create_daylight_rule(name, group_id, scene_id, transition=4, daylight=True):
                 'address': '/groups/{}/action'.format(group_id),
                 'method': 'PUT',
                 'body': {
-                    'scene': scene_id,
-                    'transitiontime': transition
+                    'scene': scene_id
                 }
             }
         ]
@@ -220,7 +230,7 @@ def main():
     create_emma_switch_rule(emma_group_id, 4, 'colorloop')
 
     configure_daylight_sensor(LAT, LONG)
-    create_daylight_rule('Emma Morning', emma_group_id, 'white', transition=(10 * 60 * 60))
+    create_daylight_rule('Emma Morning', emma_group_id, 'white1hour')
 
 if __name__ == '__main__':
     main()
