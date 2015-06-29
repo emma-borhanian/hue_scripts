@@ -85,11 +85,11 @@ def request(method, path, data=None):
 
     if is_error(response):
         print(method.__name__, path, data, file=sys.stderr)
-        print(response.status_code, response.content, file=sys.stderr)
+        print(response.status_code, response.content.decode(), file=sys.stderr)
         raise RuntimeError('request failed')
     elif method != requests.get:
         print(method.__name__, path, data)
-        print(response.status_code, response.content)
+        print(response.status_code, response.content.decode())
 
     return response
 
