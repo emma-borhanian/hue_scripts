@@ -43,12 +43,12 @@ SCENE_JSONS = [{
     }
 }, {
     'name': 'white1hour',
-    'transitiontime': 10 * 60 * 60, # given in multiples of .1 seconds
     'lights': {
         light_id: {
             'on': True,
             'bri': 255,
-            'sat': 0
+            'sat': 0,
+            'transitiontime': 10 * 60 * 60 # given in multiples of .1 seconds
         }
         for light_id in LIGHT_IDS
     }
